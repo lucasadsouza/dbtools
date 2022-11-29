@@ -1,0 +1,8 @@
+dbtools/__pycache__
+dbtools/databases/__pycache__
+dbtools/querybuilder/__pycache__
+dbtools.egg-info
+Include
+Lib
+Scripts
+pyvenv.cfg
