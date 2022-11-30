@@ -12,3 +12,4 @@ __url__ = 'https://github.com/lucasadsouza/dbtools'
 __version__ = '1.0.0'
 
 import dbtools.databases
+import dbtools.querybuilder
