@@ -36,4 +36,4 @@ print(dogsdb.fetch_dog('Pluto'))
 # output: ('Pluto', 9)
 ```
 
-_* It is updated according personal uses._
+_* It is updated according personal needs._
