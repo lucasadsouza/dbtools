@@ -24,7 +24,7 @@ class SQLQueryBuilder(QueryBuilderInterface):
   NOT = 'NOT'
   ON = 'ON'
 
-  def join(self, values: tuple or list, quote_mark: bool=False) -> str:
+  def join(self, values: list or list, quote_mark: bool=False) -> str:
     temp_list = []
     for value in values:
       if quote_mark and type(value) == str:
@@ -46,7 +46,7 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
     return self
 
-  def INSERT_INTO(self, table: str, columns: tuple[str]=()) -> object:
+  def INSERT_INTO(self, table: str, columns: list[str]=[]) -> object:
     self.query = f'INSERT INTO {table}'
 
     if columns:
@@ -131,10 +131,10 @@ class SQLQueryBuilder(QueryBuilderInterface):
   def NOT_LIKE(self, column: str, pattern: str) -> str:
     raise NotImplementedError('NOT_LIKE not implemented.')
 
-  def IN(self, column: str, values_list: tuple[str or int or float or bytes]) -> str:
+  def IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
     raise NotImplementedError('IN not implemented.')
 
-  def NOT_IN(self, column: str, values_list: tuple[str or int or float or bytes]) -> str:
+  def NOT_IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
     raise NotImplementedError('NOT_IN not implemented.')
 
   # Others:

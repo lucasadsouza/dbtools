@@ -26,7 +26,7 @@ class QueryBuilderInterface():
   def SELECT(self, *column_names: str or int) -> str:
     raise NotImplementedError('SELECT not implemented.')
 
-  def INSERT_INTO(self, table: str, columns: tuple[str]=()) -> str:
+  def INSERT_INTO(self, table: str, columns: list[str]=()) -> str:
     raise NotImplementedError('INSERT_INTO not implemented.')
 
   def UPDATE(self, table: str) -> str:
@@ -86,10 +86,10 @@ class QueryBuilderInterface():
   def NOT_LIKE(self, column: str, pattern: str) -> str:
     raise NotImplementedError('NOT_LIKE not implemented.')
 
-  def IN(self, column: str, values_list: tuple[str or int or float or bytes]) -> str:
+  def IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
     raise NotImplementedError('IN not implemented.')
 
-  def NOT_IN(self, column: str, values_list: tuple[str or int or float or bytes]) -> str:
+  def NOT_IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
     raise NotImplementedError('NOT_IN not implemented.')
 
   # Others:
