@@ -1,21 +1,47 @@
+import datetime, re
 import sqlite3 as sqlite
 from contextlib import closing
 
 from dbtools.databases.interface import DatabaseInterface
 
 
-def bool_adapter(value: bool) -> int:
-  return 1 if bool else 0
-
 def bool_converter(value: int) -> bool:
   return bool(int)
+
+
+def date_iso_adapter(value: datetime.datetime) -> str:
+  return value.isoformat()
+
+def datetime_iso_adapter(value: datetime.datetime) -> str:
+  return value.isoformat()
+
+def date_converter(value: bytes) -> datetime.date:
+  return datetime.date.fromisoformat(value.decode())
+
+def datetime_converter(value: bytes) -> datetime.datetime:
+  tz = re.search(r'(?P<tzinfo>Z|[+-]\d{2}(?::?\d{2})?)?$', value.decode(), re.MULTILINE)
+
+  if tz == None:
+    tz = datetime.timezone.utc
+
+  else:
+    tz = tz.groupdict()['tzinfo']
+    hours = -int(tz[:3]) if tz[0] == '-' else int(tz[:3])
+    tz = datetime.timezone(datetime.timedelta(hours=hours))
+
+  return datetime.datetime.fromisoformat(value.decode()).replace(tzinfo=tz)
 
 
 class SQLiteDB(DatabaseInterface):
   def __init__(self, database_path: str):
     self.database_path = database_path
 
+    sqlite.register_adapter(datetime.date, date_iso_adapter)
+    sqlite.register_adapter(datetime.datetime, datetime_iso_adapter)
+
     sqlite.register_converter('boolean', bool_converter)
+    sqlite.register_converter('date', date_converter)
+    sqlite.register_converter('datetime', datetime_converter)
 
     self.connection = sqlite.connect(self.database_path, detect_types=sqlite.PARSE_DECLTYPES)
 
