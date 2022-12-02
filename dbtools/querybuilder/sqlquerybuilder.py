@@ -81,10 +81,11 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
     return self
 
-  def SET(self, column: str, value: any) -> object:
-    self.values.append(value)
+  def SET(self, **items: any) -> object:
+    self.values.extend(list(items.values()))
 
-    self.query = f'{self.query} SET {column}=?'
+    columns = [ f'{column}=?' for column in items.keys() ]
+    self.query = f'{self.query} SET {self.join(columns)}'
 
     return self
 

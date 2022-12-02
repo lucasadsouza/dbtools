@@ -51,7 +51,7 @@ class QueryBuilderInterface():
   def FROM(self, table: str) -> object:
     raise NotImplementedError('FROM not implemented.')
 
-  def SET(self, column: str, value: any) -> object:
+  def SET(self, **items: any) -> object:
     raise NotImplementedError('SET not implemented.')
 
   def VALUES(self, *values: any) -> object:
