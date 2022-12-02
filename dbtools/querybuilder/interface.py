@@ -3,7 +3,7 @@ from dbtools.querybuilder.query import Query
 
 class QueryBuilderInterface():
   query: str
-  query_fragment: str
+  values: list
 
   # Constants:
   NULL: str
@@ -25,20 +25,26 @@ class QueryBuilderInterface():
   NOT: str
   ON: str
 
+  def join(self, values: list, quote_mark: bool=False) -> str:
+    raise NotImplementedError('join not implemented.')
+
+  def get_query(self) -> Query:
+    raise NotImplementedError('get_query not implemented.')
+
   # Primary:
-  def SELECT(self, *column_names: str or int) -> str:
+  def SELECT(self, *column_names: str or int) -> object:
     raise NotImplementedError('SELECT not implemented.')
 
-  def INSERT_INTO(self, table: str, columns: list[str]=()) -> str:
+  def INSERT_INTO(self, table: str, columns: list[str]=[]) -> object:
     raise NotImplementedError('INSERT_INTO not implemented.')
 
-  def UPDATE(self, table: str) -> str:
+  def UPDATE(self, table: str) -> object:
     raise NotImplementedError('UPDATE not implemented.')
 
-  def DELETE_FROM(self, table: str) -> str:
+  def DELETE_FROM(self, table: str) -> object:
     raise NotImplementedError('DELETE_FROM not implemented.')
 
-  def EXISTS(self, query: Query) -> object:
+  def EXISTS(self, query: Query) -> str:
     raise NotImplementedError('EXISTS not implemented.')
 
   # Secundary:
@@ -109,5 +115,5 @@ class QueryBuilderInterface():
   def STATEMENT(self, statements: str or int or float or tuple) -> str:
     raise NotImplementedError('STATEMENT not implemented.')
 
-  def TABLE_INFO(self, table: str) -> str:
-    raise NotImplementedError('TABLE_INFO not implemented.')
+  def PRAGMA_TABLE_INFO(self, table: str) -> str:
+    raise NotImplementedError('PRAGMA_TABLE_INFO not implemented.')

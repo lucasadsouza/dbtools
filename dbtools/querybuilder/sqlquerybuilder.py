@@ -60,13 +60,13 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
     return self
 
-  def UPDATE(self, table: str) -> str:
+  def UPDATE(self, table: str) -> object:
     self.query = f'UPDATE {table}'
     self.values = []
 
     return self
 
-  def DELETE_FROM(self, table: str) -> str:
+  def DELETE_FROM(self, table: str) -> object:
     self.query = f'DELETE FROM {table}'
     self.values = []
 
