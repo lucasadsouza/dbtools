@@ -73,8 +73,15 @@ class SQLiteDB(DatabaseInterface):
       cursor.execute(query.query, query.values)
       self.connection.commit()
 
-  def exists(self, table: str, column: str, value: any) -> bool:
-    if self.fetchone(qb.SELECT(qb.EXISTS(qb.SELECT(1).FROM(table).WHERE(qb.EQUALS(column, value)).get_query())).get_query())[0]:
+  def exists(self, table: str, **items: any) -> bool:
+    where_statement = []
+    for idx, (column, value) in enumerate(items.items()):
+      where_statement.append(qb.EQUALS(column, value))
+
+      if idx + 1 < len(items):
+        where_statement.append(qb.AND)
+
+    if self.fetchone(qb.SELECT(qb.EXISTS(qb.SELECT(1).FROM(table).WHERE(*where_statement).get_query())).get_query())[0]:
       return True
 
     else:

@@ -13,5 +13,5 @@ class DatabaseInterface():
   def update(self, query: Query) -> tuple:
     raise NotImplementedError()
 
-  def exists(self, table: str, column: str, where: any) -> bool:
+  def exists(self, table: str, **items: any) -> bool:
     raise NotImplementedError()
