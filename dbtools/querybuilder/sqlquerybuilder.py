@@ -1,8 +1,10 @@
 from dbtools.querybuilder.interface import QueryBuilderInterface
+from dbtools.querybuilder.query import Query
 
 
 class SQLQueryBuilder(QueryBuilderInterface):
   query = ''
+  values = []
 
   # Constants:
   NULL = 'NULL'
@@ -24,7 +26,7 @@ class SQLQueryBuilder(QueryBuilderInterface):
   NOT = 'NOT'
   ON = 'ON'
 
-  def join(self, values: list or list, quote_mark: bool=False) -> str:
+  def join(self, values: list, quote_mark: bool=False) -> str:
     temp_list = []
     for value in values:
       if quote_mark and type(value) == str:
@@ -37,17 +39,21 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
     return ', '.join(temp_list)
 
-  def get_query(self):
-    return f'{self.query};'
+  def get_query(self) -> Query:
+    query = f'{self.query};'
+
+    return Query(query, self.values)
 
   # Primary:
   def SELECT(self, *columns: str or int) -> object:
     self.query = f'SELECT {self.join(columns)}'
+    self.values = []
 
     return self
 
   def INSERT_INTO(self, table: str, columns: list[str]=[]) -> object:
     self.query = f'INSERT INTO {table}'
+    self.values = []
 
     if columns:
       self.query += f'({self.join(columns)})'
@@ -56,16 +62,18 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
   def UPDATE(self, table: str) -> str:
     self.query = f'UPDATE {table}'
+    self.values = []
 
     return self
 
   def DELETE_FROM(self, table: str) -> str:
     self.query = f'DELETE FROM {table}'
+    self.values = []
 
     return self
 
-  def EXISTS(self, query: str) -> object:
-    raise NotImplementedError('EXISTS not implemented.')
+  def EXISTS(self, query: Query) -> str:
+    return f'EXISTS({query.query.replace(";", "")})'
 
   # Secundary:
   def FROM(self, table: str) -> object:
@@ -73,21 +81,23 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
     return self
 
-  def SET(self, column: str, value: str or int or float or bytes) -> object:
-    if type(value) == str:
-      value = f'"{value}"'
+  def SET(self, column: str, value: any) -> object:
+    self.values.append(value)
 
-    self.query = f'{self.query} SET {column}={value}'
+    self.query = f'{self.query} SET {column}=?'
 
     return self
 
-  def VALUES(self, *values: str or int or float or bytes) -> object:
-    self.query = f'{self.query} VALUES({self.join(values, True)})'
+  def VALUES(self, *values: any) -> object:
+    quote_values = ['?' for i in range(0, len(values))]
+    self.query = f'{self.query} VALUES({self.join(quote_values)})'
+
+    self.values.extend(values)
 
     return self
 
   # Terciary:
-  def WHERE(self, *statements: str or int or float or bytes or tuple) -> object:
+  def WHERE(self, *statements: str or int or float or tuple) -> object:
     self.query = f'{self.query} WHERE {self.STATEMENT(*statements)}'
 
     return self
@@ -97,32 +107,32 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
     return self
 
-  def INNER_JOIN(self, *statements: str or int or float or bytes or tuple) -> object:
+  def INNER_JOIN(self, *statements: str or int or float or tuple) -> object:
     raise NotImplementedError('INNER_JOIN not implemented.')
 
   # Conditions:
-  def EQUALS(self, column: str, value: str or int or float or bytes) -> str:
+  def EQUALS(self, column: str, value: str or int or float) -> str:
     if type(value) == str:
       value = f"'{value}'"
 
     return f'{column}={value}'
 
-  def NOT_EQUAL(self, column: str, value: str or int or float or bytes) -> str:
+  def NOT_EQUAL(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('NOT_EQUAL not implemented.')
 
-  def GREATER(self, column: str, value: str or int or float or bytes) -> str:
+  def GREATER(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('GREATER not implemented.')
 
-  def LESS(self, column: str, value: str or int or float or bytes) -> str:
+  def LESS(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('LESS not implemented.')
 
-  def GREATER_OR_EQUAL(self, column: str, value: str or int or float or bytes) -> str:
+  def GREATER_OR_EQUAL(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('GREATER_OR_EQUAL not implemented.')
 
-  def LESS_OR_EQUAL(self, column: str, value: str or int or float or bytes) -> str:
+  def LESS_OR_EQUAL(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('LESS_OR_EQUAL not implemented.')
 
-  def BETWEEN(self, column: str, first_value: str or int or float or bytes, second_value: str or int or float or bytes) -> str:
+  def BETWEEN(self, column: str, first_value: str or int or float, second_value: str or int or float) -> str:
     raise NotImplementedError('BETWEEN not implemented.')
 
   def LIKE(self, column: str, pattern: str) -> str:
@@ -131,10 +141,10 @@ class SQLQueryBuilder(QueryBuilderInterface):
   def NOT_LIKE(self, column: str, pattern: str) -> str:
     raise NotImplementedError('NOT_LIKE not implemented.')
 
-  def IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
+  def IN(self, column: str, values_list: list[str or int or float]) -> str:
     raise NotImplementedError('IN not implemented.')
 
-  def NOT_IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
+  def NOT_IN(self, column: str, values_list: list[str or int or float]) -> str:
     raise NotImplementedError('NOT_IN not implemented.')
 
   # Others:
@@ -152,7 +162,7 @@ class SQLQueryBuilder(QueryBuilderInterface):
     raise NotImplementedError('AS not implemented.')
 
   # Not chainable:
-  def STATEMENT(self, *statements: str or int or float or bytes or tuple) -> str:
+  def STATEMENT(self, *statements: str or int or float or tuple) -> str:
     query = ''
 
     for statement in statements:

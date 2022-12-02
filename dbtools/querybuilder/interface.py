@@ -1,3 +1,6 @@
+from dbtools.querybuilder.query import Query
+
+
 class QueryBuilderInterface():
   query: str
   query_fragment: str
@@ -35,49 +38,49 @@ class QueryBuilderInterface():
   def DELETE_FROM(self, table: str) -> str:
     raise NotImplementedError('DELETE_FROM not implemented.')
 
-  def EXISTS(self, query: str) -> object:
+  def EXISTS(self, query: Query) -> object:
     raise NotImplementedError('EXISTS not implemented.')
 
   # Secundary:
   def FROM(self, table: str) -> object:
     raise NotImplementedError('FROM not implemented.')
 
-  def SET(self, column: str, value: str or int or float or bytes) -> object:
+  def SET(self, column: str, value: any) -> object:
     raise NotImplementedError('SET not implemented.')
 
-  def VALUES(self, *values: str or int or float or bytes) -> object:
+  def VALUES(self, *values: any) -> object:
     raise NotImplementedError('VALUES not implemented.')
 
   # Terciary:
-  def WHERE(self, *statements: str or int or float or bytes or tuple) -> object:
+  def WHERE(self, *statements: str or int or float or tuple) -> object:
     raise NotImplementedError('WHERE not implemented.')
 
   def ORDER_BY(self, *columns: str) -> object:
     raise NotImplementedError('ORDER_BY not implemented.')
 
-  def INNER_JOIN(self, *statements: str or int or float or bytes or tuple) -> object:
+  def INNER_JOIN(self, *statements: str or int or float or tuple) -> object:
     raise NotImplementedError('INNER_JOIN not implemented.')
 
   # Conditions:
-  def EQUALS(self, column: str, value: str or int or float or bytes) -> str:
+  def EQUALS(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('EQUALS not implemented.')
 
-  def NOT_EQUAL(self, column: str, value: str or int or float or bytes) -> str:
+  def NOT_EQUAL(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('NOT_EQUAL not implemented.')
 
-  def GREATER(self, column: str, value: str or int or float or bytes) -> str:
+  def GREATER(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('GREATER not implemented.')
 
-  def LESS(self, column: str, value: str or int or float or bytes) -> str:
+  def LESS(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('LESS not implemented.')
 
-  def GREATER_OR_EQUAL(self, column: str, value: str or int or float or bytes) -> str:
+  def GREATER_OR_EQUAL(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('GREATER_OR_EQUAL not implemented.')
 
-  def LESS_OR_EQUAL(self, column: str, value: str or int or float or bytes) -> str:
+  def LESS_OR_EQUAL(self, column: str, value: str or int or float) -> str:
     raise NotImplementedError('LESS_OR_EQUAL not implemented.')
 
-  def BETWEEN(self, column: str, first_value: str or int or float or bytes, second_value: str or int or float or bytes) -> str:
+  def BETWEEN(self, column: str, first_value: str or int or float, second_value: str or int or float) -> str:
     raise NotImplementedError('BETWEEN not implemented.')
 
   def LIKE(self, column: str, pattern: str) -> str:
@@ -86,10 +89,10 @@ class QueryBuilderInterface():
   def NOT_LIKE(self, column: str, pattern: str) -> str:
     raise NotImplementedError('NOT_LIKE not implemented.')
 
-  def IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
+  def IN(self, column: str, values_list: list[str or int or float]) -> str:
     raise NotImplementedError('IN not implemented.')
 
-  def NOT_IN(self, column: str, values_list: list[str or int or float or bytes]) -> str:
+  def NOT_IN(self, column: str, values_list: list[str or int or float]) -> str:
     raise NotImplementedError('NOT_IN not implemented.')
 
   # Others:
@@ -103,7 +106,7 @@ class QueryBuilderInterface():
     raise NotImplementedError('AS not implemented.')
 
   # Not chainable:
-  def STATEMENT(self, statements: str or int or float or bytes or tuple) -> str:
+  def STATEMENT(self, statements: str or int or float or tuple) -> str:
     raise NotImplementedError('STATEMENT not implemented.')
 
   def TABLE_INFO(self, table: str) -> str:

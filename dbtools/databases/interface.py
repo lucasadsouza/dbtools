@@ -1,14 +1,16 @@
+from dbtools.querybuilder.query import Query
+
 class DatabaseInterface():
-  def fetch(self, query: str, values: tuple=()) -> tuple:
+  def fetch(self, query: Query) -> tuple:
     raise NotImplementedError()
 
-  def fetchone(self, query: str, values: tuple=()) -> tuple:
+  def fetchone(self, query: Query) -> tuple:
     raise NotImplementedError()
 
-  def insert(self, query: str, values: tuple=()) -> tuple:
+  def insert(self, query: Query) -> tuple:
     raise NotImplementedError()
 
-  def update(self, query: str, values: tuple=()) -> tuple:
+  def update(self, query: Query) -> tuple:
     raise NotImplementedError()
 
   def exists(self, table: str, column: str, where: any) -> bool:

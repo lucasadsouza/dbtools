@@ -3,7 +3,11 @@ import sqlite3 as sqlite
 from contextlib import closing
 
 from dbtools.databases.interface import DatabaseInterface
+from dbtools.querybuilder.sqlquerybuilder import SQLQueryBuilder
+from dbtools.querybuilder.query import Query
 
+
+qb = SQLQueryBuilder()
 
 def bool_converter(value: int) -> bool:
   return bool(int)
@@ -45,32 +49,32 @@ class SQLiteDB(DatabaseInterface):
 
     self.connection = sqlite.connect(self.database_path, detect_types=sqlite.PARSE_DECLTYPES)
 
-  def fetch(self, query: str, values:tuple=()) -> tuple:
+  def fetch(self, query: Query) -> tuple:
     with closing(self.connection.cursor()) as cursor:
-      cursor.execute(query, values)
+      cursor.execute(query.query, query.values)
       response = cursor.fetchall()
 
     return response
 
-  def fetchone(self, query: str, values:tuple=()) -> tuple:
+  def fetchone(self, query: Query) -> tuple:
     with closing(self.connection.cursor()) as cursor:
-      cursor.execute(query, values)
+      cursor.execute(query.query, query.values)
       response = cursor.fetchone()
 
     return response
 
-  def insert(self, query: str, values:tuple=()):
+  def insert(self, query: Query):
     with closing(self.connection.cursor()) as cursor:
-      cursor.execute(query, values)
+      cursor.execute(query.query, query.values)
       self.connection.commit()
 
-  def update(self, query: str, values:tuple=()):
+  def update(self, query: Query):
     with closing(self.connection.cursor()) as cursor:
-      cursor.execute(query, values)
+      cursor.execute(query.query, query.values)
       self.connection.commit()
 
   def exists(self, table: str, column: str, value: any) -> bool:
-    if self.fetchone(f'SELECT EXISTS(SELECT 1 FROM {table} WHERE {column} = ?);', (value,))[0]:
+    if self.fetchone(qb.SELECT(qb.EXISTS(qb.SELECT(1).FROM(table).WHERE(qb.EQUALS(column, value)).get_query())).get_query())[0]:
       return True
 
     else:
