@@ -10,8 +10,7 @@ from dbtools.querybuilder.query import Query
 qb = SQLQueryBuilder()
 
 def bool_converter(value: int) -> bool:
-  return bool(int)
-
+  return bool(int(value))
 
 def date_iso_adapter(value: datetime.datetime) -> str:
   return value.isoformat()
