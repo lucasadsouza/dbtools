@@ -26,6 +26,12 @@ class SQLQueryBuilder(QueryBuilderInterface):
   NOT = 'NOT'
   ON = 'ON'
 
+  # CREATE TABLE arguments:
+  PRIMARY_KEY = 'PRIMARY KEY'
+  AUTOINCREMENT = 'AUTOINCREMENT'
+  NOT_NULL = 'NOT NULL'
+  UNIQUE = 'UNIQUE'
+
   def join(self, values: list, quote_mark: bool=False) -> str:
     temp_list = []
     for value in values:
@@ -47,6 +53,20 @@ class SQLQueryBuilder(QueryBuilderInterface):
   # Primary:
   def SELECT(self, *columns: str or int) -> object:
     self.query = f'SELECT {self.join(columns)}'
+    self.values = []
+
+    return self
+
+  def CREATE_TABLE(self, table_name: str, columns: dict) -> object:
+    elements = []
+    for key, values in columns.items():
+      for idx, value in enumerate(values):
+        if callable(value):
+          values[idx] = value()
+
+      elements.append(f'{key} {" ".join(values)}')
+
+    self.query = f'CREATE TABLE {table_name}(\n' + ',\n'.join(elements) + '\n)'
     self.values = []
 
     return self
@@ -147,6 +167,21 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
   def NOT_IN(self, column: str, values_list: list[str or int or float]) -> str:
     raise NotImplementedError('NOT_IN not implemented.')
+
+  # Datatypes:
+  def INTEGER(self, length: int=None) -> str:
+    if length:
+      return f'INTEGER({length})'
+
+    else:
+      return 'INTEGER'
+
+  def TEXT(self, length: int=None) -> str:
+    if length:
+      return f'TEXT({length})'
+
+    else:
+      return 'TEXT'
 
   # Others:
   def ASC(self) -> object:

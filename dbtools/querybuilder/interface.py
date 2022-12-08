@@ -25,6 +25,12 @@ class QueryBuilderInterface():
   NOT: str
   ON: str
 
+  # CREATE TABLE arguments:
+  PRIMARY_KEY: str
+  AUTO_INCREMENT: str
+  NOT_NULL: str
+  UNIQUE: str
+
   def join(self, values: list, quote_mark: bool=False) -> str:
     raise NotImplementedError('join not implemented.')
 
@@ -34,6 +40,9 @@ class QueryBuilderInterface():
   # Primary:
   def SELECT(self, *column_names: str or int) -> object:
     raise NotImplementedError('SELECT not implemented.')
+
+  def CREATE_TABLE(self, table_name: str, columns: dict) -> object:
+    raise NotImplementedError('CREATE_TABLE not implemented.')
 
   def INSERT_INTO(self, table: str, columns: list[str]=[]) -> object:
     raise NotImplementedError('INSERT_INTO not implemented.')
@@ -100,6 +109,13 @@ class QueryBuilderInterface():
 
   def NOT_IN(self, column: str, values_list: list[str or int or float]) -> str:
     raise NotImplementedError('NOT_IN not implemented.')
+
+  # Datatypes:
+  def INTEGER(self, length: int) -> str:
+    raise NotImplementedError('INTEGER not implemented.')
+
+  def TEXT(self, length: int) -> str:
+    raise NotImplementedError('TEXT not implemented.')
 
   # Others:
   def ASC(self) -> object:
