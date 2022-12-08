@@ -5,10 +5,15 @@ from contextlib import closing
 from dbtools.databases.interface import DatabaseInterface
 from dbtools.querybuilder.sqlquerybuilder import SQLQueryBuilder
 from dbtools.querybuilder.query import Query
+from dbtools.on_error import on_error
 
 
 qb = SQLQueryBuilder()
 
+
+"""
+CONVERTERS & ADAPTERS
+"""
 def bool_converter(value: int) -> bool:
   return bool(int(value))
 
@@ -35,6 +40,19 @@ def datetime_converter(value: bytes) -> datetime.datetime:
   return datetime.datetime.fromisoformat(value.decode()).replace(tzinfo=tz)
 
 
+"""
+EXCEPTIONS
+"""
+
+class Error(sqlite.Error):
+  """Wrapper for sqlite.Error Exception"""
+
+class OperationalError(sqlite.OperationalError):
+  """Raised for errors related to the database's operations."""
+
+dbtools_sqlite_exceptions = [Error, OperationalError]
+
+
 class SQLiteDB(DatabaseInterface):
   def __init__(self, database_path: str):
     self.database_path = database_path
@@ -48,6 +66,7 @@ class SQLiteDB(DatabaseInterface):
 
     self.connection = sqlite.connect(self.database_path, detect_types=sqlite.PARSE_DECLTYPES)
 
+  @on_error(dbtools_sqlite_exceptions)
   def fetch(self, query: Query) -> tuple:
     with closing(self.connection.cursor()) as cursor:
       cursor.execute(query.query, query.values)
@@ -55,6 +74,7 @@ class SQLiteDB(DatabaseInterface):
 
     return response
 
+  @on_error(dbtools_sqlite_exceptions)
   def fetchone(self, query: Query) -> tuple:
     with closing(self.connection.cursor()) as cursor:
       cursor.execute(query.query, query.values)
@@ -62,11 +82,13 @@ class SQLiteDB(DatabaseInterface):
 
     return response
 
+  @on_error(dbtools_sqlite_exceptions)
   def insert(self, query: Query):
     with closing(self.connection.cursor()) as cursor:
       cursor.execute(query.query, query.values)
       self.connection.commit()
 
+  @on_error(dbtools_sqlite_exceptions)
   def update(self, query: Query):
     with closing(self.connection.cursor()) as cursor:
       cursor.execute(query.query, query.values)
