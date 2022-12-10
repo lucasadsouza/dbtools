@@ -1,3 +1,5 @@
+import re
+
 from dbtools.querybuilder.interface import QueryBuilderInterface
 from dbtools.querybuilder.query import Query
 
@@ -52,6 +54,12 @@ class SQLQueryBuilder(QueryBuilderInterface):
 
   # Primary:
   def SELECT(self, *columns: str or int) -> object:
+    columns = list(columns)
+
+    for i in range(0, len(columns)):
+      if type(columns[i]) == str and re.search(r'[-|\s]', columns[i]):
+        columns[i] = f'"{columns[i]}"'
+
     self.query = f'SELECT {self.join(columns)}'
     self.values = []
 
