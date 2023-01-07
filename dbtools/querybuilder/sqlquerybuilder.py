@@ -57,8 +57,9 @@ class SQLQueryBuilder(QueryBuilderInterface):
     columns = list(columns)
 
     for i in range(0, len(columns)):
-      if type(columns[i]) == str and re.search(r'[-|\s]', columns[i]):
-        columns[i] = f'"{columns[i]}"'
+      if type(columns[i]) == str and 'EXISTS' not in columns[i]:
+        if re.search(r'[-|\s]', columns[i]):
+          columns[i] = f'"{columns[i]}"'
 
     self.query = f'SELECT {self.join(columns)}'
     self.values = []
