@@ -91,6 +91,8 @@ class SQLiteDB(DatabaseInterface):
       cursor.execute(query.query, query.values)
       self.connection.commit()
 
+      return cursor.lastrowid
+
   @on_error(dbtools_sqlite_exceptions)
   def update(self, query: Query):
     with closing(self.connection.cursor()) as cursor:
