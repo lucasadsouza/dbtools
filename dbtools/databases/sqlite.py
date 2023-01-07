@@ -50,7 +50,10 @@ class Error(sqlite.Error):
 class OperationalError(sqlite.OperationalError):
   """Raised for errors related to the database's operations."""
 
-dbtools_sqlite_exceptions = [Error, OperationalError]
+class InterfaceError(sqlite.InterfaceError):
+  """Raised for errors related to the database's interface errors."""
+
+dbtools_sqlite_exceptions = [Error, OperationalError, InterfaceError]
 
 
 class SQLiteDB(DatabaseInterface):
